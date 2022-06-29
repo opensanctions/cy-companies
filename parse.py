@@ -1,17 +1,14 @@
 import csv
 from datetime import datetime
 from io import TextIOWrapper
-from ntpath import join
 from zipfile import ZipFile
 from zavod import Zavod, init_context
-from zavod.logs import get_logger
 
 from followthemoney.util import join_text
 
 NAME = "cy_companies"
 URL = "https://www.data.gov.cy/node/4016/dataset/download"
 TYPES = {"C": "HE", "P": "S", "O": "AE", "N": "BN", "B": "B"}
-log = get_logger(NAME)
 
 
 def parse_date(text):
@@ -90,7 +87,7 @@ def parse_officials(context: Zavod, rows):
 
 
 def parse_address(context: Zavod, rows):
-    org_types = list(TYPES.keys())
+    # org_types = list(TYPES.keys())
     for row in rows:
         entity = context.make("Address")
         entity.id = address_id(row.pop("ADDRESS_SEQ_NO"))
@@ -111,7 +108,7 @@ def parse(context: Zavod):
     data_path = context.fetch_resource("data.zip", URL)
     with ZipFile(data_path, "r") as zip:
         for name in zip.namelist():
-            log.info("Reading: %s in %s" % (name, data_path))
+            context.log.info("Reading: %s in %s" % (name, data_path))
             if name.startswith("organisations_"):
                 rows = iter_rows(zip, name)
                 parse_organisations(context, rows)
