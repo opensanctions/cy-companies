@@ -45,8 +45,15 @@ def parse_organisations(context: Zavod, rows):
         entity.id = company_id(org_type, reg_nr)
         entity.add("name", row.pop("ORGANISATION_NAME"))
         entity.add("status", row.pop("ORGANISATION_STATUS"))
+        if org_type == "O":
+            entity.add("country", "cy")
+        else:
+            entity.add("jurisdiction", "cy")
         org_type_oc = TYPES[org_type]
-        entity.add("registrationNumber", f"{org_type_oc}{reg_nr}")
+        oc_id = f"{org_type_oc}{reg_nr}"
+        oc_url = f"https://opencorporates.com/companies/he/{oc_id}"
+        entity.add("opencorporatesUrl", oc_url)
+        entity.add("registrationNumber", oc_id)
         entity.add("registrationNumber", f"{org_type}{reg_nr}")
         org_type_text = row.pop("ORGANISATION_TYPE")
         org_subtype = row.pop("ORGANISATION_SUB_TYPE")
